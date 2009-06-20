@@ -60,7 +60,7 @@ def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html"
         if response_format in config.format_http_header.keys():
           web.header("Content-Type", config.format_http_header[response_format])
         #render.web.render('browse.'+response_format)
-        return render.browse()
+        return render.browse(file_url, file_id, sel_ik)
 
     elif len(mindex)-len(mkey) == 1:
       #there is a different process if len(mindex) and len(mkey) are differents, 
@@ -75,7 +75,7 @@ def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html"
       #  web.render('browsechoosevalue.ajax')
       #else:
       #web.render('browsechoosevalue.'+response_format)
-      return render.browse()
+      return render.browse(file_url, file_id, sel_ik)
     else:
       #complaining about the uneven (more than usual at least) numbers of index and keys provided
       print("you have selected %s index but only %s keys where given\

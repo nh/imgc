@@ -1,286 +1,250 @@
-#import config
-#import uihelper
-#import HTMLTemplates as HTML
+$def with (file_url, file_id, sel_ik, files=None)
 
 $HTML.doctype
 <head>
 $HTML.header
-$if $getVar('file_url', None):
+$if file_url:
   <META NAME="ROBOTS" CONTENT="NOFOLLOW">
-$if files:
-  <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="${config.server_name}${config.base_url}${uihelper.build_link($sel_ik)}/RSS" />
+$if files is not None:
+  <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="$# ${config.server_name}${config.base_url}${uihelper.build_link($sel_ik)} #$/RSS" />
 </head>
 $HTML.body_start
 
-#set global $prev_file = None
-#set global $next_file = None
-#set global $gotone = False 
-#set global $gotboth = False 
-#set global $pos = 0 
-#set global $imagePos = 0 
+$ prev_file = None
+$ next_file = None
+$ gotone = False 
+$ gotboth = False 
+$ pos = 0 
+$ imagePos = 0
+$ div_id = ""
 
-#def setprevnext(f)
-  #if $getVar('file_id', None)
-      #if $gotone
-        #set global $next_file = $f
-        #set global $gotboth = True 
-      #end if
-      #if int($file_id)== int($f.id)
-        #set global $gotone= True
-        #set global $imagePos = $pos
-      #end if
-      #if not $gotone
-        #set global $prev_file = $f
-      #end if
-      #set global $pos = $pos + 1
-    #end if
-#end def
+$code:
+  def setprevnext(f):
+    if file_id:
+      if gotone:
+        next_file = f
+        gotboth = True 
+      if int(file_id) == int(f.id):
+        gotone = True
+        imagePos = pos
+      if not gotone:
+        prev_file = f
+      pos = pos + 1
 
-#if $varExists('files')
-  #set $div_id = "right_sided"
-#else if $getVar('file_url', None) and not $getVar('sel_ik', None)
-  ##when just showing a file the layout is simpler
-  #set $div_id = ""
-#else
-  #set $div_id = "right_sided"
-#end if
+  if files:
+    div_id = "right_sided"
+  elif file_url and not sel_ik:
+    # when just showing a file the layout is simpler
+    div_id = ""
+  else:
+    div_id = "right_sided"
+
 <div id='$div_id'>
   
-  #if $getVar('file_url', None)
-    $HTML.section_start('infos','image infos', 'iinfos', '<a href="'+$config.base_url+'image'+$file_id+'">permalink to this image</a>')
-      $uihelper.get_nice_info($file_id)
+  $if file_url:
+    $HTML.section_start('infos','image infos','iinfos', '<a href="'+config.base_url+'image'+file_id+'">permalink to this image</a>')
+      $uihelper.get_nice_info(file_id)
     $HTML.section_end
     <div id="image_preview">
-      #if $file_path[-3:].upper()=='JPG'
-        <a href="$file_url"><img src="$uihelper.get_image($file_path, $sizeX)"/></a>
-      #else if $file_path[-3:].upper() in $config.video_objects
+      $if file_path[-3:].upper()=='JPG':
+        <a href="$file_url"><img src="$uihelper.get_image(file_path, sizeX)"/></a>
+      $elif file_path[-3:].upper() in config.video_objects:
         <object type="application/x-shockwave-flash" data="/plugin/flvplayer.swf?autostart=false&file=${file_url}.flv" width="480" height="360" wmode="transparent">
           <param name="movie" value="/plugin/flvplayer.swf?autostart=false&file=${file_url}.flv" />
           <param name="wmode" value="transparent" />
         </object>
-      #end if
     </div>
-  #end if
 
-  ##if we have an image we wish to compute the prev/next images
-  #if $getVar('file_url', None)
-    #if $varExists('files')
-     <script type="text/javascript">
-     var urlPrefix = '${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id';
-     var ids=[
-        #if $getVar('clustered_files', None)
-          #for $ivalue in $uihelper.sort_k($clustered_files.keys(), $cluster_pivot):
-            #for $f in $clustered_files[$ivalue]:
-              #if not $gotboth
-                $setprevnext($f)
-              #end if
-'<a href="'+urlPrefix+'$f.id"><img src="$uihelper.get_thumbnail($f.filename)"/></a>',#slurp
-            #end for
-          #end for
-        #else
-          #for f in $files
-            #if not $gotboth
-              $setprevnext($f)
-            #end if
-'<img src="$uihelper.get_thumbnail($f.filename)"/>',#slurp
-          #end for
-        #end if
-'null'];
+  $# if we have an image we wish to compute the prev/next images
+  $if file_url:
+    $if files:
+      <script type="text/javascript">
+      var urlPrefix = '${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id';
+      var ids=[
+        $if clustered_files:
+          $for ivalue in uihelper.sort_k(clustered_files.keys(), cluster_pivot):
+            $for f in clustered_files[ivalue]:
+              $if not gotboth:
+                $setprevnext(f)
+              '<a href="'+urlPrefix+'$f.id"><img src="$uihelper.get_thumbnail(f.filename)"/></a>',
+        $else:
+          $for f in files:
+            $if not gotboth:
+              $setprevnext(f)
+            '<img src="$uihelper.get_thumbnail(f.filename)"/>',
+      'null'];
      var pagePos=$imagePos;
      </script>
-    #end if
-  #else
-    #if $varExists('files')
-      #set $nb_files = $len($files)
-      $HTML.section_start('', '%s image%s' % ($nb_files, $nb_files > 1 and 's' or ' '))
-        #if $getVar('clustered_files', None)
+  $else:
+    $if files:
+      $nb_files = len(files)
+      $HTML.section_start('', '%s image%s' % (nb_files, nb_files > 1 and 's' or ' '))
+        $if clustered_files:
           <dl class='img_clusters'>
-          #for $ivalue in $uihelper.sort_k($clustered_files.keys(), $cluster_pivot):
-            ##set $tfiles = $clustered_files[$ivalue]
+          $for ivalue in uihelper.sort_k(clustered_files.keys(), cluster_pivot):
+            $ tfiles = clustered_files[ivalue]
             <dt>
-              <a href="${config.base_url}${uihelper.build_link($sel_ik)}/$cluster_pivot$ivalue">$uihelper.hr_tag($cluster_pivot, $ivalue)</a>
+              <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$cluster_pivot$ivalue">$uihelper.hr_tag(cluster_pivot, ivalue)</a>
             </dt>
             <dd>
-            #for $f in $clustered_files[$ivalue]:
-              #set $thm = $uihelper.get_thumbnail($f.filename)
-              #if $thm
-<a href="${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$f.id"><img src="$thm"/></a>#slurp
-              #else
-<a href="${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$f.id">no thumbnail available</a>#slurp
-              #end if
-##<a href="${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$f.id"><img src="$uihelper.get_thumbnail($f.filename)"/></a>#slurp
-##  $setprevnext($f)#slurp
-            #end for
+            $for f in clustered_files[ivalue]:
+              $ thm = uihelper.get_thumbnail(f.filename)
+              $if thm:
+                <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$f.id"><img src="$thm"/></a>
+              $else:
+                <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$f.id">no thumbnail available</a>
+                $# <a href="${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$f.id"><img src="$uihelper.get_thumbnail($f.filename)"/></a>
+                $#  $setprevnext($f)
             </dd>
-          #end for
           </dl>
-        #else
-          #for f in $files
-          #set $thm = $uihelper.get_thumbnail($f.filename)
-          #if $thm
-<a href="${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$f.id"><img src="$thm"/></a>#slurp
-          #else
-<a href="${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$f.id">no thumbnail available</a>#slurp
-          #end if
-##  $setprevnext($f)#slurp
-          #end for
-        #end if
+        $else:
+          $for f in files:
+            $ thm = uihelper.get_thumbnail(f.filename)
+            $if thm:
+              <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$f.id"><img src="$thm"/></a>
+            $else:
+              <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$f.id">no thumbnail available</a>
+              $# $setprevnext($f)
       $HTML.section_end
-    #else if $getVar('sel_ik', None)
+    $elif sel_ik:
       <p>no file could be found with the current selection, please broaden your selection by removing or changing some of it.</p>  
-    #end if
-  #end if
 </div>
 
-#set $dividcounter = 0
-#if $varExists('sel_ik')
+$ dividcounter = 0
+$if sel_ik:
   <div id='left_sided'>
     $HTML.section_start('','selection')
       <ul>
-      #set $value_per_index = {}
-      #for (index, value) in $sel_ik
-        ## it's ok to erase the multiple values because we don't use the value_per_index in this case
-        #set $value_per_index[$index] = $value
+      $ value_per_index = {}
+      $for (index, value) in sel_ik:
+        $# it's ok to erase the multiple values because we don't use the value_per_index in this case
+        $ value_per_index[index] = value
         <li class="selection">
-          $index : 
-          #if $getVar('sel_index_othervalues', None) and $sel_index_othervalues[$index] > 1
-            <a onclick="toggle_choices('indexvalue$dividcounter','${config.base_url}${uihelper.build_link($sel_ik, None, ($index, $value))}/AJAX'); return false;" href="${config.base_url}${uihelper.build_link($sel_ik, None, ($index, $value))}" title="change value" class="js jdd">$uihelper.hr_tag($index, $value)</a>
-          #else
-            $uihelper.hr_tag($index, $value)
-          #end if
-          <a href="${config.base_url}${uihelper.build_link($sel_ik, ($index, $value))}" class="removeaction" title="remove">[-]</a>
+          $# $index : 
+          $if sel_index_othervalues and sel_index_othervalues[index] > 1:
+            <a onclick="toggle_choices('indexvalue$dividcounter','${config.base_url}${uihelper.build_link(sel_ik, None, (index, value))}/AJAX'); return false;" href="${config.base_url}${uihelper.build_link(sel_ik, None, (index, value))}" title="change value" class="js jdd">$uihelper.hr_tag(index, value)</a>
+          $else:
+            $uihelper.hr_tag(index, value)
+          <a href="${config.base_url}${uihelper.build_link(sel_ik, (index, value))}" class="removeaction" title="remove">[-]</a>
           <div id="indexvalue$dividcounter" style="display : none;" onclick="hide_choices('indexvalue$dividcounter');" ></div>
         </li>
-        #set $dividcounter += 1
-      #end for
+        $ dividcounter += 1
       </ul>
-      #if $getVar('index_othervalues', None)
-        ##not having this var means we can't refine
+      $if index_othervalues:
+        $#not having this var means we can't refine
         <dl>
           <dt>refine using:</dt>
           <dd>
             <ul>
-            #for index in $index_othervalues.keys()
-              #if $index in $value_per_index.keys() and not $index in $config.have_many_values
-                #set $index_value = $value_per_index[$index]
-              #else
-                #set $index_value = None
-              #end if
-              #if ($config.maximum_key_quantity_per_index.has_key($index) and $len($index_othervalues[$index]) >  $config.maximum_key_quantity_per_index[$index]) or $len($index_othervalues[$index]) > $config.maximum_key_quantity
+            $for index in index_othervalues.keys():
+              $if index in value_per_index.keys() and not index in config.have_many_values:
+                $ index_value = value_per_index[index]
+              $else:
+                $ index_value = None
+              $if (config.maximum_key_quantity_per_index.has_key(index) and len(index_othervalues[index]) > config.maximum_key_quantity_per_index[index]) or len(index_othervalues[index]) > config.maximum_key_quantity:
                 <li class="action add">
-                  #if $index_value
-                    <a onclick="toggle_choices('indexvalue$dividcounter','${config.base_url}${uihelper.build_link($sel_ik, ($index, $index_value))}/$index/AJAX'); return false;" href="${config.base_url}${uihelper.build_link($sel_ik, ($index, $index_value))}/$index" class="js jdd">$index</a>
-                  #else
-                    <a onclick="toggle_choices('indexvalue$dividcounter','${config.base_url}${uihelper.build_link($sel_ik)}/$index/AJAX'); return false;" href="${config.base_url}${uihelper.build_link($sel_ik)}/$index" class="js jdd">$index</a>
-                  #end if
-                  <span class="quantity">($len($index_othervalues[$index]) values)</span>
+                  $if index_value:
+                    <a onclick="toggle_choices('indexvalue$dividcounter','${config.base_url}${uihelper.build_link(sel_ik, (index, index_value))}/$index/AJAX'); return false;" href="${config.base_url}${uihelper.build_link(sel_ik, (index, index_value))}/$index" class="js jdd">$index</a>
+                  $else:
+                    <a onclick="toggle_choices('indexvalue$dividcounter','${config.base_url}${uihelper.build_link(sel_ik)}/$index/AJAX'); return false;" href="${config.base_url}${uihelper.build_link(sel_ik)}/$index" class="js jdd">$index</a>
+                  <span class="quantity">($len(index_othervalues[index]) values)</span>
                 </li>
                 <div id="indexvalue$dividcounter" style="display : none;" onclick="hide_choices('indexvalue$dividcounter');" ></div>
-                #set $dividcounter += 1
-              #else if $len($index_othervalues[$index]) > 1
-                #set $links_data = $uihelper.build_possible_links($sel_ik, ($index, $index_value), $index_othervalues[$index], $len($files))
-                ##true is at least one link generated
-                #if $links_data[0]
+                $ dividcounter += 1
+              $elif len(index_othervalues[index]) > 1:
+                $ links_data = uihelper.build_possible_links(sel_ik, (index, index_value), index_othervalues[index], len(files))
+                $#true is at least one link generated
+                $if links_data[0]:
                   <li class="action add">
-                #else
+                $else:
                   <li class="action add_disabled">
-                #end if
                   $index $links_data[1]
                 </li>
-              #else if $len($index_othervalues[$index]) == 1
-                #if $index in $config.have_many_values and $index_othervalues[$index][0].quantity < $len($files)
-                  <li class="action add">$index <a href="${config.base_url}${uihelper.build_link($sel_ik+[($index,$index_othervalues[$index][0].value)])}">$uihelper.hr_tag($index, $index_othervalues[$index][0].value)</a></li>
-                #else
-                  <li class="action add_disabled">$index $uihelper.hr_tag($index, $index_othervalues[$index][0].value)</li>
-                #end if
-              #else 
-                #if $index in $config.have_many_values
-                  #if $index in $value_per_index.keys()
+              $elif len(index_othervalues[index]) == 1:
+                $if index in config.have_many_values and index_othervalues[index][0].quantity < len(files):
+                  <li class="action add">$index <a href="${config.base_url}${uihelper.build_link(sel_ik+[(index,index_othervalues[index][0].value)])}">$uihelper.hr_tag(index, index_othervalues[index][0].value)</a></li>
+                $else:
+                  <li class="action add_disabled">$index $uihelper.hr_tag(index, index_othervalues[index][0].value)</li>
+              $else:
+                $if index in config.have_many_values:
+                  $if index in value_per_index.keys():
                     <li class="action add_disabled">no other possible $index</a></li>
-                  #else
+                  $else:
                     <li class="action add_disabled">no $index available</a></li>
-                  #end if
-                #end if
-              #end if
-            #end for
             <li class="remove action">
               <a href="$config.home_url" style="font-weight:bold;">reset all</a>
             </li>
             </ul>
           </dd>
         </dl>
-      #end if
-
     $HTML.section_end
-  #if ($prev_file or $next_file) and $getVar('file_url', None)
-    $HTML.section_start('','naviguation')
-      <!--
+  $if (prev_file or next_file) and file_url:
+    $HTML.section_start('','navigation')
+
+
+
+
       <div class="thb"> 
         <div class="th_sel" id="prev_sel" >
-        #if $prev_file
-          <a href="${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$prev_file.id">$HTML.icones['prev'] prev</a>
-        #else
+        $if prev_file:
+          <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$prev_file.id">$HTML.icones['prev'] prev</a>
+        $else:
           $HTML.icones['prev'] prev
-        #end if
         </div>
         <div class="thb_img" style="width: ${config.image_thumbnail}px; height: ${config.image_thumbnail}px;">
-        #if $prev_file
-          <a href="${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$prev_file.id"><img src="$uihelper.get_thumbnail($prev_file.filename)"/></a>#slurp
-        #else
+        $if prev_file:
+          <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$prev_file.id"><img src="$uihelper.get_thumbnail(prev_file.filename)"/></a>
+        $else:
           this is the first image
-        #end if
         </div>
       </div>
       <div class='thb'>
         <div class="th_sel" id="next_sel" >
-        #if $next_file
-          <a href="${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$next_file.id">next $HTML.icones['next']</a>
-        #else
+        $if next_file:
+          <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$next_file.id">next $HTML.icones['next']</a>
+        $else:
           next $HTML.icones['next']
-        #end if
         </div>
         <div class="thb_img" style="width: ${config.image_thumbnail}px; height: ${config.image_thumbnail}px;">
-      #if $next_file
-<a href="${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$next_file.id"><img src="$uihelper.get_thumbnail($next_file.filename)"/></a>#slurp
-      #else
-      this is the last image
-      #end if
+      $if next_file:
+        <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$next_file.id"><img src="$uihelper.get_thumbnail(next_file.filename)"/></a>
+      $else:
+        this is the last image
         </div>
       </div>
-      -->
-      <div id='thBrowser' style='overflow: hidden; width:#echo 2*$config.image_thumbnail#px; height: ${config.image_thumbnail}px'>
-        <div id='thBrowseSlide' style='width:#echo 4*$config.image_thumbnail#px; position:relative; top:0; left:0;'>
+
+
+
+
+      <div id='thBrowser' style='overflow: hidden; width:${2*config.image_thumbnail}px; height: ${config.image_thumbnail}px'>
+        <div id='thBrowseSlide' style='width:${4*config.image_thumbnail}px; position:relative; top:0; left:0;'>
           <div id='hPrev' style='position: relative; top: 0; left: -${config.image_thumbnail}px; width: ${config.image_thumbnail}px; height: ${config.image_thumbnail}; float:left;'>&nbsp;</div>
           <div id='vPrev' style='position: relative; top: 0; left: -${config.image_thumbnail}px; width: ${config.image_thumbnail}px; height: ${config.image_thumbnail}; float:left;'>
-            #if $prev_file
-              <a href="${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$prev_file.id"><img src="$uihelper.get_thumbnail($prev_file.filename)"/></a>#slurp
-            #else
+            $if prev_file:
+              <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$prev_file.id"><img src="$uihelper.get_thumbnail(prev_file.filename)"/></a>
+            $else:
               this is the first image
-            #end if
           </div>
           <div id='vNext' style='position: relative; top: 0; left: -${config.image_thumbnail}px; width: ${config.image_thumbnail}px; height: ${config.image_thumbnail};  float: left;'>
-            #if $next_file
-              <a href="${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$next_file.id"><img src="$uihelper.get_thumbnail($next_file.filename)"/></a>#slurp
-            #else
+            $if next_file:
+              <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$next_file.id"><img src="$uihelper.get_thumbnail(next_file.filename)"/></a>
+            $else:
               this is the last image
-            #end if
           </div>
           <div id='hNext' style='position: relative; top: 0; left: -${config.image_thumbnail}px; width: ${config.image_thumbnail}px; height: ${config.image_thumbnail};  float: left;'>&nbsp;</div>
         </div>
       </div>
-      <div style='width:#echo 2*$config.image_thumbnail#px;'>
-          #if $prev_file
-            <a href='${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$prev_file.id' rel='prev'#slurp
-          #else
-            <a href='#' #slurp
-          #end if
+      <div style='width:${2*config.image_thumbnail}px;'>
+          $if prev_file:
+            <a href='${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$prev_file.id' rel='prev'
+          $else:
+            <a href='#' 
  onclick="prev(); return false;" class="js jprev">prev</a>
-          <a href="${config.base_url}${uihelper.build_link($sel_ik)}" class="mixedjs" rel='index'>back to the list</a> 
-          #if $next_file
-            <a href='${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$next_file.id' rel='next'#slurp
-          #else
-            <a href='#' #slurp
-          #end if
+          <a href="${config.base_url}${uihelper.build_link(sel_ik)}" class="mixedjs" rel='index'>back to the list</a> 
+          $if next_file:
+            <a href='${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$next_file.id' rel='next'
+          $else:
+            <a href='#' 
  onclick="next(); return false;" class="js jnext">next</a>
       </div>
     $HTML.section_end
@@ -342,13 +306,11 @@ function next() {
 }
 
      </script>
-  #end if
   <div id="rss_container">
     <img src="/icones/feed-icon-32x32.png" alt="rss icon"/>
-    <a href="${config.base_url}${uihelper.build_link($sel_ik)}/RSS">RSS feed for this selection</a>
+    <a href="${config.base_url}${uihelper.build_link(sel_ik)}/RSS">RSS feed for this selection</a>
   </div>
   </div>
-#end if
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
 </script>
 <script type="text/javascript">
