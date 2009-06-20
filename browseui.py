@@ -62,10 +62,7 @@ def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html"
         if response_format in config.format_http_header.keys():
           web.header("Content-Type", config.format_http_header[response_format])
         #render.web.render('browse.'+response_format)
-        print "-----------------------"
-        print file_id
-        print sel_ik
-        return render.browse(files,sel_ik,sel_index_othervalues,index_othervalues)
+        return render.browse(file_url,file_id,sel_ik,sel_index_othervalues,index_othervalues,files,clustered_files,cluster_pivot)
 
     elif len(mindex)-len(mkey) == 1:
       #there is a different process if len(mindex) and len(mkey) are differents, 
@@ -98,4 +95,4 @@ def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html"
 def build_sel_ik(mindex, mkey, max_range):
   """return a list of (index,key) tuples from the url attributes"""
   #we use a given range because the number of values for mindex and mkey can be uneven
-  return [(mindex[i], str(mkey[i])) for i in range(max_range)]
+  return [(mindex[i], mkey[i]) for i in range(max_range)]

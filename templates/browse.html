@@ -1,4 +1,4 @@
-$def with (file_url=None, file_id=None, sel_ik=None, sel_index_othervalues=None, index_othervalues=None, files=None)
+$def with (file_url=None, file_id=None, sel_ik=None, sel_index_othervalues=None, index_othervalues=None, files=None, clustered_files=None, cluster_pivot=None)
 
 $:HTML.doctype
 <head>
@@ -61,7 +61,7 @@ $code:
      </script>
   $else:
     $if files:
-      $nb_files = len(files)
+      $ nb_files = len(files)
       $:HTML.section_start('', '%s image%s' % (nb_files, nb_files > 1 and 's' or ' '))
         $if clustered_files:
           <dl class='img_clusters'>
@@ -100,7 +100,7 @@ $if sel_ik:
     $:HTML.section_start('','selection')
       <ul>
       $ value_per_index = {}
-      $for index in sel_ik:
+      $for index,value in sel_ik:
         $# it's ok to erase the multiple values because we don't use the value_per_index in this case
         $ value_per_index[index] = value
         <li class="selection"> 
