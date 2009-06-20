@@ -72,6 +72,7 @@ $code:
             </dt>
             <dd>
             $for f in clustered_files[ivalue]:
+              $f
               $ thm = uihelper.get_thumbnail(f.filename)
               $if thm:
                 <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$f.id"><img src="$thm"/></a>
