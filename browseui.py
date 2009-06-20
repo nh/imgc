@@ -20,7 +20,7 @@ def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html"
 
   if file_id:
     #we need to request the filename
-    db_file = web.query("select filename from images where id = %s" % file_id)
+    db_file = db.query("select filename from images where id = %s" % file_id)
     if len(db_file) == 1:
       file_path = db_file[0].filename
       file_url = config.web_alias + file_path[len(config.base_dir):]
@@ -60,7 +60,7 @@ def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html"
         if response_format in config.format_http_header.keys():
           web.header("Content-Type", config.format_http_header[response_format])
         #render.web.render('browse.'+response_format)
-        return render.browse(file_url, file_id, sel_ik)
+        return render.browse(files, file_url, file_id, sel_ik, sel_index_othervalues, index_othervalues)
 
     elif len(mindex)-len(mkey) == 1:
       #there is a different process if len(mindex) and len(mkey) are differents, 

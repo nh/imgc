@@ -94,7 +94,7 @@ class browser:
               key.append(f)
           if no_value_for_index: break
 
-      browseui.print_selection(index, key, file_id, response_format, sizeX)
+      return browseui.print_selection(index, key, file_id, response_format, sizeX)
     else:
       return browseui.print_selection()
 

@@ -45,7 +45,7 @@ def findall (dir = os.curdir):
 def sync():
   #list all files from disk and DB
   disk_entries = get_files()
-  db_entries = [f['filename'] for f in web.query("select filename from images")]
+  db_entries = [f['filename'] for f in db.query("select filename from images")]
   extra_db_entries = []
   print "%s disk entries\n%s db entries\n" % (len(disk_entries), len(db_entries))
   for f in db_entries: 
@@ -62,14 +62,14 @@ def sync():
   for f in extra_db_entries:
     print "removing %s from DB" % f
     #remove the info from the db
-    file_id = web.query('select id from images where filename = "%s"' % f)[0].id
-    web.query("delete from images where id = %s" % file_id)
+    file_id = db.query('select id from images where filename = "%s"' % f)[0].id
+    db.query("delete from images where id = %s" % file_id)
     for imv in config.have_many_values:
       #removing the infos from the various multiple indexes
-      web.query("delete from images_%ss where image_id = %s" % (imv, file_id))
+      db.query("delete from images_%ss where image_id = %s" % (imv, file_id))
   for imv in config.have_many_values:
     print "cleaning the possibles orphan values for the index %s" % imv
-    web.query("delete from %ss where id not in (select %s_id from images_%ss)" % (imv, imv, imv))
+    db.query("delete from %ss where id not in (select %s_id from images_%ss)" % (imv, imv, imv))
 
 
   #diff the lists : remove from each list identical entries
@@ -119,7 +119,7 @@ def store_infos(infos, extra_db_entries):
     except KeyError:
       pass
   #checking for file renaming with sha
-  possiblePrevFiles = web.query("select id, filename, batch from images where sha ='"+infos['sha']+"'")
+  possiblePrevFiles = db.query("select id, filename, batch from images where sha ='"+infos['sha']+"'")
   updatingFile = False
   if len(possiblePrevFiles) == 1:
     #file found in db
@@ -129,7 +129,7 @@ def store_infos(infos, extra_db_entries):
     simple_infos['batch'] = prevFile.batch
     try:
       extra_db_entries.remove(prevFile.filename)
-      web.update('images', 'id = %s' % file_id, None, **simple_infos)
+      db.update('images', 'id = %s' % file_id, None, **simple_infos)
       updatingFile = True
     except ValueError:
       #raise with .remove when the filename do not match
@@ -138,21 +138,21 @@ def store_infos(infos, extra_db_entries):
     if len(possiblePrevFiles) > 1:
       #more than one file with this sha... 
       print "INFO sha present multiple time for file : "+infos["filename"]
-    file_id = web.insert('images', True, **simple_infos)
+    file_id = db.insert('images', True, **simple_infos)
 
   for index in multiple_infos.keys():
     #store the value in its table
     for value in multiple_infos[index]:
       try:
-        value_id = web.insert(index+'s', True, **{"value" : value})
+        value_id = db.insert(index+'s', True, **{"value" : value})
         #debuginsert(index+'s', False, **{"value" : value})
       except: 
         #TODO should be IntegrityError for mysql but not sure how best integrate that without breaking the DB abstraction...
         #but if the error wasn't an IntegrityError then the next line should fail
-        value_id = web.query('select id from %ss where value = "%s"' % (index, value))[0].id
+        value_id = db.query('select id from %ss where value = "%s"' % (index, value))[0].id
       #store the relationship between the value and the file
       try:
-        web.insert("images_"+index+'s', False, **{index+"_id": value_id, "image_id" : file_id})
+        db.insert("images_"+index+'s', False, **{index+"_id": value_id, "image_id" : file_id})
       except Exception, inst:
         #if we are update a file we might raise some integrity error here
         if updatingFile:

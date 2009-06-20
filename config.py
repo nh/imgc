@@ -26,7 +26,7 @@ base_url = root_url+"/"
 home_url = base_url+''
 css_url = static_server+'/css/modern.css'
 #directory in which the pictures can be found, this is only used at indexing time
-base_dir = "/home/antoine/photos/small" 
+base_dir = "C:\Work\webpy\img" 
 #extension list, the value is what we append to get the thumbnail
 supported_extensions = ('JPG', 'AVI' , 'WMV')
 extensions_thumbnails = {'AVI':'.thm', 'WMV':'.thm'}

@@ -1,14 +1,14 @@
-$def with (file_url, file_id, sel_ik, files=None)
+$def with (file_url=None, file_id=None, sel_ik=None, sel_index_othervalues=None, index_othervalues=None, files=None)
 
-$HTML.doctype
+$:HTML.doctype
 <head>
-$HTML.header
+$:HTML.header
 $if file_url:
   <META NAME="ROBOTS" CONTENT="NOFOLLOW">
 $if files is not None:
   <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="$# ${config.server_name}${config.base_url}${uihelper.build_link($sel_ik)} #$/RSS" />
 </head>
-$HTML.body_start
+$:HTML.body_start
 
 $ prev_file = None
 $ next_file = None
@@ -30,7 +30,6 @@ $code:
       if not gotone:
         prev_file = f
       pos = pos + 1
-
   if files:
     div_id = "right_sided"
   elif file_url and not sel_ik:
@@ -42,9 +41,9 @@ $code:
 <div id='$div_id'>
   
   $if file_url:
-    $HTML.section_start('infos','image infos','iinfos', '<a href="'+config.base_url+'image'+file_id+'">permalink to this image</a>')
+    $:HTML.section_start('infos','image infos','iinfos', '<a href="'+config.base_url+'image'+file_id+'">permalink to this image</a>')
       $uihelper.get_nice_info(file_id)
-    $HTML.section_end
+    $:HTML.section_end
     <div id="image_preview">
       $if file_path[-3:].upper()=='JPG':
         <a href="$file_url"><img src="$uihelper.get_image(file_path, sizeX)"/></a>
@@ -78,7 +77,7 @@ $code:
   $else:
     $if files:
       $nb_files = len(files)
-      $HTML.section_start('', '%s image%s' % (nb_files, nb_files > 1 and 's' or ' '))
+      $:HTML.section_start('', '%s image%s' % (nb_files, nb_files > 1 and 's' or ' '))
         $if clustered_files:
           <dl class='img_clusters'>
           $for ivalue in uihelper.sort_k(clustered_files.keys(), cluster_pivot):
@@ -105,7 +104,7 @@ $code:
             $else:
               <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$f.id">no thumbnail available</a>
               $# $setprevnext($f)
-      $HTML.section_end
+      $:HTML.section_end
     $elif sel_ik:
       <p>no file could be found with the current selection, please broaden your selection by removing or changing some of it.</p>  
 </div>
@@ -113,7 +112,7 @@ $code:
 $ dividcounter = 0
 $if sel_ik:
   <div id='left_sided'>
-    $HTML.section_start('','selection')
+    $:HTML.section_start('','selection')
       <ul>
       $ value_per_index = {}
       $for (index, value) in sel_ik:
@@ -177,9 +176,9 @@ $if sel_ik:
             </ul>
           </dd>
         </dl>
-    $HTML.section_end
+    $:HTML.section_end
   $if (prev_file or next_file) and file_url:
-    $HTML.section_start('','navigation')
+    $:HTML.section_start('','navigation')
 
 
 
@@ -187,9 +186,9 @@ $if sel_ik:
       <div class="thb"> 
         <div class="th_sel" id="prev_sel" >
         $if prev_file:
-          <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$prev_file.id">$HTML.icones['prev'] prev</a>
+          <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$prev_file.id">$:HTML.icones['prev'] prev</a>
         $else:
-          $HTML.icones['prev'] prev
+          $:HTML.icones['prev'] prev
         </div>
         <div class="thb_img" style="width: ${config.image_thumbnail}px; height: ${config.image_thumbnail}px;">
         $if prev_file:
@@ -201,9 +200,9 @@ $if sel_ik:
       <div class='thb'>
         <div class="th_sel" id="next_sel" >
         $if next_file:
-          <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$next_file.id">next $HTML.icones['next']</a>
+          <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$next_file.id">next $:HTML.icones['next']</a>
         $else:
-          next $HTML.icones['next']
+          next $:HTML.icones['next']
         </div>
         <div class="thb_img" style="width: ${config.image_thumbnail}px; height: ${config.image_thumbnail}px;">
       $if next_file:
@@ -247,7 +246,7 @@ $if sel_ik:
             <a href='#' 
  onclick="next(); return false;" class="js jnext">next</a>
       </div>
-    $HTML.section_end
+    $:HTML.section_end
      <script type="text/javascript">
 var currentPrevPos=pagePos-1;
 var mainBar =document.getElementById('thBrowser'); 
@@ -311,10 +310,4 @@ function next() {
     <a href="${config.base_url}${uihelper.build_link(sel_ik)}/RSS">RSS feed for this selection</a>
   </div>
   </div>
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-</script>
-<script type="text/javascript">
-_uacct = "UA-318711-1";
-urchinTracker();
-</script>
-$HTML.body_end
+$:HTML.body_end
