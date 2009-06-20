@@ -86,7 +86,7 @@ class browser:
                 if f in all_index_values:
                   index.append(iname)
                   key.append(f)
-                  #if debug: req.write("<br/>found index "+iname+" with value "+f)
+                  print "found index "+iname+" with value "+f
                   found_in_index = True
                   break
             if not found_in_index:

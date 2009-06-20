@@ -39,20 +39,6 @@ $code:
 
 <div id='$div_id'>
   
-  $if file_url:
-    $:HTML.section_start('infos','image infos','iinfos', '<a href="'+config.base_url+'image'+file_id+'">permalink to this image</a>')
-      $uihelper.get_nice_info(file_id)
-    $:HTML.section_end
-    <div id="image_preview">
-      $if file_path[-3:].upper()=='JPG':
-        <a href="$file_url"><img src="$uihelper.get_image(file_path, sizeX)"/></a>
-      $elif file_path[-3:].upper() in config.video_objects:
-        <object type="application/x-shockwave-flash" data="/plugin/flvplayer.swf?autostart=false&file=${file_url}.flv" width="480" height="360" wmode="transparent">
-          <param name="movie" value="/plugin/flvplayer.swf?autostart=false&file=${file_url}.flv" />
-          <param name="wmode" value="transparent" />
-        </object>
-    </div>
-
   $# if we have an image we wish to compute the prev/next images
   $if file_url:
     $if files:
@@ -114,11 +100,10 @@ $if sel_ik:
     $:HTML.section_start('','selection')
       <ul>
       $ value_per_index = {}
-      $for (index, value) in sel_ik:
+      $for index in sel_ik:
         $# it's ok to erase the multiple values because we don't use the value_per_index in this case
         $ value_per_index[index] = value
-        <li class="selection">
-          $# $index : 
+        <li class="selection"> 
           $if sel_index_othervalues and sel_index_othervalues[index] > 1:
             <a onclick="toggle_choices('indexvalue$dividcounter','${config.base_url}${uihelper.build_link(sel_ik, None, (index, value))}/AJAX'); return false;" href="${config.base_url}${uihelper.build_link(sel_ik, None, (index, value))}" title="change value" class="js jdd">$uihelper.hr_tag(index, value)</a>
           $else:

@@ -2,8 +2,7 @@ import config
 
 simple_header = """
       <title>ibrouteur</title>
-      <style type="text/css"><!-- @import "%s"; --></style>
-""" % (config.css_url)
+"""
 
 doctype= "<html>"
 ##doctype= """

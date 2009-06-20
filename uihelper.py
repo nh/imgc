@@ -5,6 +5,7 @@ mainly related to index lookup
 import config
 import englishhelper
 import web
+from index import db
 import p23_lib.pil.Image as image
 try:
   from cStringIO import StringIO
@@ -29,7 +30,7 @@ def build_link(sel_ik, notthis_i = None, notthis_v = None):
     else:
       link_elements = [i for i in sel_ik if i != notthis_i]
       
-    link = '/'.join([str(index)+urlquote(str(value)) for (index,value) in link_elements])
+    link = '/'.join([str(index)+urlquote(str(value)) for index,value in link_elements])
     #web.debug(link)
 
     if notthis_v:
@@ -135,10 +136,10 @@ def get_nice_info(file_id):
   #TODO make it more flexible, put the strings in the config
   infos_html = StringIO()
   ddlink = lambda i, k, v : '<a href="%s%s%s">%s</a>' % (config.base_url,i,urlquote(k),v)
-  fsi = web.query("select * from images where id = %s" % file_id)[0]
+  fsi = db.query("select * from images where id = %s" % file_id)[0]
   fmi = {}
   for i in config.have_many_values:
-    fmi[i] = web.query("select value from %(index)ss iv, images_%(index)ss ii where ii.image_id = %(file_id)s and ii.%(index)s_id = iv.id" % {"index" : i, "file_id": file_id})
+    fmi[i] = db.query("select value from %(index)ss iv, images_%(index)ss ii where ii.image_id = %(file_id)s and ii.%(index)s_id = iv.id" % {"index" : i, "file_id": file_id})
 
   if fsi.author or fsi.date or fsi.album or fsi.location:
     infos_html.write("Taken")

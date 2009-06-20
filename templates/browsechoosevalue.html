@@ -5,6 +5,8 @@ $:HTML.simple_header
 </head>
 $:HTML.body_start
 $:HTML.section_start('',current_index+'s', '')
+$for test in sel_ik:
+  $test
   <ul>
   $if index_possible_values:
     $if current_index == 'tag':
@@ -15,6 +17,6 @@ $:HTML.section_start('',current_index+'s', '')
         <li><a href="${config.base_url}${uihelper.build_link(sel_ik+[(current_index,index_value.value)])}">$uihelper.hr_tag(current_index, index_value.value)</a> <span class='quantity'>($index_value.quantity images)</span></li>
     </ul>
   $else:
-    <p>no keys could be found for this index, this is not supposed to happen... unless you've been writing some gibberish instead of a nice url, if not then just forget that it has happened and go back.</p><p>You can also try to choose another <a href="$config.base_url">index</a>.</p>
+    <p>no keys could be foundx for this index, this is not supposed to happen... unless you've been writing some gibberish instead of a nice url, if not then just forget that it has happened and go back.</p><p>You can also try to choose another <a href="$config.base_url">index</a>.</p>
 $:HTML.section_end
 $:HTML.body_end
