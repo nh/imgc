@@ -16,7 +16,6 @@ $ gotone = False
 $ gotboth = False 
 $ pos = 0 
 $ imagePos = 0
-$ div_id = ""
 
 $code:
   def setprevnext(f):
@@ -92,7 +91,7 @@ $code:
                 <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$f.id"><img src="$thm"/></a>
               $else:
                 <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$f.id">no thumbnail available</a>
-                $# <a href="${config.base_url}${uihelper.build_link($sel_ik)}/$config.file_url_id$f.id"><img src="$uihelper.get_thumbnail($f.filename)"/></a>
+                <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$f.id"><img src="$uihelper.get_thumbnail(f.filename)"/></a>
                 $#  $setprevnext($f)
             </dd>
           </dl>

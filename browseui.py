@@ -27,7 +27,6 @@ def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html"
 
   #first let's see if anything was choosen
   if mindex:
-
     #choosing the kind of situation we have to handle
     if len(mindex) == len(mkey):
       #we have the same number of indexes and key so we can print image list
@@ -38,7 +37,6 @@ def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html"
       files, clustered_files, cluster_pivot = indexhelper.select_clusters_of_files(sel_ik)
       
       if files:
-        
         cache_key = uihelper.build_link(sel_ik)
         #get the index possible values
         index_othervalues = {}
@@ -60,7 +58,7 @@ def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html"
         if response_format in config.format_http_header.keys():
           web.header("Content-Type", config.format_http_header[response_format])
         #render.web.render('browse.'+response_format)
-        return render.browse(files, file_url, file_id, sel_ik, sel_index_othervalues, index_othervalues)
+        return render.browse(files, file_url, file_id, sel_ik)
 
     elif len(mindex)-len(mkey) == 1:
       #there is a different process if len(mindex) and len(mkey) are differents, 
@@ -75,7 +73,7 @@ def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html"
       #  web.render('browsechoosevalue.ajax')
       #else:
       #web.render('browsechoosevalue.'+response_format)
-      return render.browse(file_url, file_id, sel_ik)
+      return render.browsechoosevalue(current_index,index_possible_values,sel_ik)
     else:
       #complaining about the uneven (more than usual at least) numbers of index and keys provided
       print("you have selected %s index but only %s keys where given\

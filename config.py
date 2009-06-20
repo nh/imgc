@@ -18,9 +18,9 @@ tn_next_q = 1
 #simple_url is a parameter since it dependent on apache config
 simple_url = 0
 #server_name : name of the server on which the application is running
-server_name = "http://delaunay.localdomain"
+server_name = "/"
 #static_server : name of the machine serving the static files
-static_server = "http://delaunay.localdomain"
+static_server = "/"
 root_url = ''
 base_url = root_url+"/"
 home_url = base_url+''
@@ -33,12 +33,12 @@ extensions_thumbnails = {'AVI':'.thm', 'WMV':'.thm'}
 extensions_tags = { 'AVI':('video',), 'WMV':('video',)}
 video_objects = ('AVI', 'WMV')
 #directory in which the thumbnails are going to be created and found
-tn_base_dir = "/var/cache/delaunay.org/thumbnails" 
-html_base_dir = "/var/cache/delaunay.org/html" 
+tn_base_dir = "/thumbnails" 
+html_base_dir = "/html" 
 #base_url of the pictures
-web_alias = "http://delaunay.localdomain/antoine/photos" 
+web_alias = "C:\Work\webpy\img" 
 #base_url of the thumbnails
-tn_web_alias = "http://delaunay.localdomain/antoine/thumbnails" 
+tn_web_alias = "C:\Work\webpy\img\thumbnails" 
 #name of the anchor tag given to the thumbnail of the currently selected image
 tn_anchor_name = "curr_img"
 #list of index we wish to show, the order matters
@@ -96,7 +96,7 @@ index_sorts = {'week': lambda x, y : int(x) - int(y) ,\
     'tag' : lambda x,y : x.upper() == y.upper() and 0 or (x.upper() > y.upper() and 1 or -1)}
 
 #regular expressions used in url decoding
-re_url_order = ("year", "subject", "month", "date", "location", "album", "week")
+re_url_order = ("year", "subject", "month", "date", "location", "album") #, "week")
 re_url = { 
 "month": "1?[0-9]$",\
 "year": "20[10][0-9]$",\
