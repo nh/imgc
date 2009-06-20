@@ -1,5 +1,6 @@
 #TODO update the query string to use the %(name)s instead of %s when multiple references to the same var, use the vars() function
 import web
+from index import db
 import config
 import sys
 try:
@@ -9,14 +10,14 @@ except:
 
 def get_all_values(index):
   if index in config.have_many_values:
-    db_values = web.query('select value from %ss' % index)
+    db_values = db.query('select value from %ss' % index)
     return [row.value for row in db_values]
   elif index in config.compound_indexes.keys():
     compound_info = config.compound_indexes[index]
-    db_values = web.query('select distinct(%s) as value from images order by %s' % (compound_info['reverse_query'](), get_order(index)))
+    db_values = db.query('select distinct(%s) as value from images order by %s' % (compound_info['reverse_query'](), get_order(index)))
     return [str(row.value) for row in db_values]
   else:
-    db_values = web.query('select distinct(%s) as value from images order by %s' % (index, get_order(index)))
+    db_values = db.query('select distinct(%s) as value from images order by %s' % (index, get_order(index)))
     return [row.value for row in db_values]
 
 
@@ -60,7 +61,7 @@ def get_default_values(sel_ik, index):
       else:
         temp_ignore_clause = ""
       #web.debug('GET VALUE : select value, count(images.id) as quantity from images_%(index)ss , %(index)ss, images where %(index)s_id = %(index)ss.id and images_%(index)ss.image_id = images.id %(temp_ignore_clause)s %(additional_clauses)s group by %(index)s_id' % (vars()))
-      return web.query('select value, count(images.id) as quantity from images_%ss , %ss, images where %s_id = %ss.id and images_%ss.image_id = images.id %s %s group by %s_id order by %s' % (index, index, index, index, index, temp_ignore_clause , additional_clauses, index, get_order(index)))
+      return db.query('select value, count(images.id) as quantity from images_%ss , %ss, images where %s_id = %ss.id and images_%ss.image_id = images.id %s %s group by %s_id order by %s' % (index, index, index, index, index, temp_ignore_clause , additional_clauses, index, get_order(index)))
     else:
       additional_clauses = build_clauses(sel_ik, 'and ')
       if index in config.compound_indexes.keys():
@@ -73,19 +74,19 @@ def get_default_values(sel_ik, index):
       else:
         temp_ignore_clause = ""
       #web.debug('GET VALUE: select %s as value, count(id) as quantity from images where 1=1 %s %s group by value' % (db_value, temp_ignore_clause , additional_clauses))
-      return web.query('select %s as value, count(id) as quantity from images where 1=1 %s %s group by value order by %s' % (db_value, temp_ignore_clause , additional_clauses, get_order(index)))
+      return db.query('select %s as value, count(id) as quantity from images where 1=1 %s %s group by value order by %s' % (db_value, temp_ignore_clause , additional_clauses, get_order(index)))
   else:
     #simpler case, left here for the sake of simplicity
     if index in config.have_many_values:
       #web.debug('select value, count(image_id) as quantity from images_%ss , %ss where %s_id = id  group by %s_id' % (index, index, index, index))
-      return web.query('select value, count(image_id) as quantity from images_%ss , %ss where %s_id = id  group by %s_id order by %s' % (index, index, index, index , get_order(index)))
+      return db.query('select value, count(image_id) as quantity from images_%ss , %ss where %s_id = id  group by %s_id order by %s' % (index, index, index, index , get_order(index)))
     else :
       if index in config.compound_indexes.keys():
         #need to get database specific query to match value
         db_value =  config.compound_indexes[index]['reverse_query']()
       else:
         db_value = index
-      return web.query('select %s as value, count(id) as quantity from images group by value order by %s' % (db_value, get_order(index)))
+      return db.query('select %s as value, count(id) as quantity from images group by value order by %s' % (db_value, get_order(index)))
 
 
 def get_tag_values(sel_ik, index):
@@ -146,14 +147,14 @@ def select_files(sel_ik):
   q.write(build_clauses(sel_ik,'where '))
   q.write(' order by date desc ')
   web.debug('file query = %s' % q.getvalue())
-  return web.query(q.getvalue())
+  return db.query(q.getvalue())
 
 def select_clusters_of_files(sel_ik):
   q = StringIO()
   q.write('select * from images ')
   q.write(build_clauses(sel_ik,'where '))
   q.write(' order by date desc ')
-  files = [f for f in web.query(q.getvalue())]
+  files = [f for f in db.query(q.getvalue())]
   web.debug('file query = %s' % q.getvalue())
   #clustering happens here.
   (clustered_files, cluster_pivot) = cluster_files(files, sel_ik)

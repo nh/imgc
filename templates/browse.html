@@ -1,17 +1,14 @@
 #import config
 #import uihelper
 #import HTMLTemplates as HTML
-#filter Filter
 
 $HTML.doctype
 <head>
 $HTML.header
-#if $getVar('file_url', None)
+$if $getVar('file_url', None):
   <META NAME="ROBOTS" CONTENT="NOFOLLOW">
-#end if
-#if $varExists('files')
+$if files:
   <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="${config.server_name}${config.base_url}${uihelper.build_link($sel_ik)}/RSS" />
-#end if
 </head>
 $HTML.body_start
 

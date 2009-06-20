@@ -1,4 +1,4 @@
-user='dbuser'
-password='dbpassword'
-database='dbname'
+user='postgres'
+password='web3372'
+database='gal'
 

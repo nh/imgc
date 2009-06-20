@@ -1,11 +1,18 @@
 import config
 import web
+import HTMLTemplates
+from web import template
 import indexhelper
 import uihelper
 
 def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html", sizeX = config.image_preview):
   """prints a browsing page including the selected indexes, the index which are
   still selectable and the result of the current selection as thumbnails"""
+
+  render = template.render('templates/')
+  template.Template.globals['HTML'] = HTMLTemplates
+  template.Template.globals['config'] = config
+  template.Template.globals['uihelper'] = uihelper
 
   selection = None
   indexes = None
@@ -52,7 +59,8 @@ def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html"
       else:
         if response_format in config.format_http_header.keys():
           web.header("Content-Type", config.format_http_header[response_format])
-        web.render('browse.'+response_format)
+        #render.web.render('browse.'+response_format)
+        return render.browse()
 
     elif len(mindex)-len(mkey) == 1:
       #there is a different process if len(mindex) and len(mkey) are differents, 
@@ -66,7 +74,8 @@ def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html"
       #if for_ajax:
       #  web.render('browsechoosevalue.ajax')
       #else:
-      web.render('browsechoosevalue.'+response_format)
+      #web.render('browsechoosevalue.'+response_format)
+      return render.browse()
     else:
       #complaining about the uneven (more than usual at least) numbers of index and keys provided
       print("you have selected %s index but only %s keys where given\
@@ -78,7 +87,7 @@ def print_selection(mindex=[], mkey=[], file_id = None, response_format = "html"
   else:
     indexes = [idx for idx in config.root_indexes if idx != 'tag'] 
     all_tags = indexhelper.get_values(None, "tag")
-    web.render('browseroot.html')
+    return render.browseroot(all_tags, indexes)
 
 
 def build_sel_ik(mindex, mkey, max_range):
