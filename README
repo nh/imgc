@@ -1,6 +1,6 @@
-web image gallery software, it's like flickr but not so good ;)
+web gallery software
 
-images have infos associated to them:
+images have info associated with them:
 - from the EXIF for the date, overriding possible
 - from the directory they are in
 - from the file name
