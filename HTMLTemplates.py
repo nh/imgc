@@ -46,12 +46,11 @@ root_body_start = """
     <body>
       <div id="header">
         <div class="backlinks">
-          <a href="%s">delaunay.org</a>&gt;<a href="%s/antoine">antoine</a>
-          <div class="help"><a href="%s/antoine/i/help/">help</a> - <!--<a href="./help/fr" rel="help">aide</a>--><a href="%s/antoine/license" rel="copyright">license</a></div>
+          <div class="help"><a href="/antoine/i/help/">help</a> - <!--<a href="./help/fr" rel="help">aide</a>--><a href="/antoine/license" rel="copyright">license</a></div>
         </div>
-        <h1>iBrouteur</h1>
+        <h1>ImgC</h1>
       </div>
-      <div id="body">""" % (config.static_server, config.static_server, config.static_server, config.static_server)
+      <div id="body">"""
 
 body_start = """
     <body>
