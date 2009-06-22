@@ -26,19 +26,19 @@ base_url = root_url+"/"
 home_url = base_url+''
 css_url = static_server+'/css/modern.css'
 #directory in which the pictures can be found, this is only used at indexing time
-base_dir = "C:\Work\webpy\img" 
+base_dir = "C:/work/ic/static/img/" 
 #extension list, the value is what we append to get the thumbnail
 supported_extensions = ('JPG', 'AVI' , 'WMV')
 extensions_thumbnails = {'AVI':'.thm', 'WMV':'.thm'}
 extensions_tags = { 'AVI':('video',), 'WMV':('video',)}
 video_objects = ('AVI', 'WMV')
 #directory in which the thumbnails are going to be created and found
-tn_base_dir = "/thumbnails" 
+tn_base_dir = "C:/work/ic/static/img/thumbs" 
 html_base_dir = "/html" 
 #base_url of the pictures
-web_alias = "C:\Work\webpy\img" 
+web_alias = "/static/img" 
 #base_url of the thumbnails
-tn_web_alias = "C:\Work\webpy\img\thumbnails" 
+tn_web_alias = "/static/img/thumbs" 
 #name of the anchor tag given to the thumbnail of the currently selected image
 tn_anchor_name = "curr_img"
 #list of index we wish to show, the order matters

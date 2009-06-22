@@ -5,8 +5,9 @@ mainly related to index lookup
 import config
 import englishhelper
 import web
+import sys
 from index import db
-import p23_lib.pil.Image as image
+import PIL.Image as image
 try:
   from cStringIO import StringIO
 except:
@@ -120,13 +121,16 @@ def resize_image(file_path, sizeX = config.image_thumbnail, crop_to_square = Fal
           tn_y = sizeX
           px_to_cut = (tn_x - tn_y)/2
           crop_box = (px_to_cut,0,sizeX+px_to_cut,sizeX)
-        im.thumbnail((tn_x, tn_y), image.ANTIALIAS)
-        im.crop(crop_box).save(tn, "JPEG")
+        print tn
+        #im.thumbnail((tn_x, tn_y), image.ANTIALIAS)
+        im.thumbnail((int(sizeX), int(sizeX)), image.ANTIALIAS)
+        im.save(tn, "JPEG")
+        print im.size
       else:
         im.thumbnail((int(sizeX), int(sizeX)), image.ANTIALIAS)
         im.save(tn, "JPEG")
-    except:
-      return None
+    except Exception, err:
+      sys.stderr.write('ERROR: %s\n' % str(err))
   wtn = config.tn_web_alias+tn[len(config.tn_base_dir):]
   #web.debug("WTN :"+wtn)
   #req.write('returning url : %s</br>' % wtn)

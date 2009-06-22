@@ -3,6 +3,7 @@ import sys
 import config
 import web
 import indexbuilder
+from index import db
 try:
   from datetime import date
 except:
@@ -44,6 +45,7 @@ def findall (dir = os.curdir):
 
 def sync():
   #list all files from disk and DB
+  global db
   disk_entries = get_files()
   db_entries = [f['filename'] for f in db.query("select filename from images")]
   extra_db_entries = []

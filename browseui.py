@@ -2,6 +2,7 @@ import config
 import web
 import HTMLTemplates
 from web import template
+from index import db
 import indexhelper
 import uihelper
 
