@@ -1,4 +1,8 @@
-Original readme by Antoine is "here":http://wiki.github.com/nh/imgc/original-readme. More info to follow.
+h1. ImgC
+
+At this point the code is still 99% "Antoine's":http://github.com/antoine/ibrouteur/tree. I've made a start at going through and updating all the texmplates to "templetor":http://webpy.org/docs/0.3/templetor, and generally getting everything working properly with the latest version of "web.py":http://webpy.org/
+
+Original readme by Antoine is "here":http://wiki.github.com/nh/imgc/original-readme. More info and some proper design documents covering the scope of the project to follow soon.
 
 h2. Copyright
 
