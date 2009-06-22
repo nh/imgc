@@ -1,6 +1,6 @@
 Original readme by Antoine is "here":http://wiki.github.com/nh/imgc/original-readme. More info to follow.
 
-h3. Copyright
+h2. Copyright
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
