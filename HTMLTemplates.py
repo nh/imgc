@@ -1,7 +1,7 @@
 import config
 
 simple_header = """
-      <title>ibrouteur</title>
+      <title>ImgC</title>
 """
 
 doctype= "<html>"
@@ -9,11 +9,10 @@ doctype= "<html>"
 ##<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 ##"""
 
-header = """
-      <title>ibrouteur</title>
-      <style type="text/css"><!-- @import \""""+config.css_url+"""\"; --></style>
+header = "<title>ImgC</title>"
+"""<style type="text/css"><!-- @import \""""+config.css_url+"""\"; --></style>
       <script src=\""""+config.static_server+"""/js/scriptaculous/prototype.js" type="text/javascript"></script>
-      <script src=\""""+config.static_server+"""/js/scriptaculous/scriptaculous.js" type="text/javascript"></script>
+      $#<script src=\""""+config.static_server+"""/js/scriptaculous/scriptaculous.js" type="text/javascript"></script>
       <script type="text/javascript">
       function toggle_choices(target, url){
         var telem = document.getElementById(target);
@@ -44,24 +43,15 @@ function list_choices(target, url){
 
 root_body_start = """
     <body>
-      <div id="header">
-        <div class="backlinks">
-          <div class="help"><a href="/antoine/i/help/">help</a> - <!--<a href="./help/fr" rel="help">aide</a>--><a href="/antoine/license" rel="copyright">license</a></div>
-        </div>
         <h1>ImgC</h1>
-      </div>
       <div id="body">"""
 
 body_start = """
     <body>
       <div id="header">
-        <div class="backlinks">
-          <a href="%s">delaunay.org</a>&gt;<a href="%s/antoine">antoine</a>&gt;<a href="http://delaunay.org/antoine/i">iBrouteur</a>
-          <div class="help"><a href="%s/antoine/i/help/">help</a> - <!--<a href="./help/fr">aide</a>--><a href="%s/antoine/license">license</a></div>
-        </div>
         <h1>Browsing</h1>
       </div>
-      <div id="body">""" % (config.static_server, config.static_server, config.static_server, config.static_server)
+      <div id="body">"""
 
 body_end = """</div>
 </body></html>"""

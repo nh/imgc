@@ -6,7 +6,7 @@ $:HTML.header
 $if file_url:
   <META NAME="ROBOTS" CONTENT="NOFOLLOW">
 $if files is not None:
-  <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="$# ${config.server_name}${config.base_url}${uihelper.build_link($sel_ik)} #$/RSS" />
+  $#<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="${config.server_name}${config.base_url}${uihelper.build_link($sel_ik)}/RSS" />
 </head>
 $:HTML.body_start
 
@@ -72,7 +72,7 @@ $code:
             </dt>
             <dd>
             $for f in clustered_files[ivalue]:
-              $f
+              <!-- $f -->
               $ thm = uihelper.get_thumbnail(f.filename)
               $if thm:
                 <a href="${config.base_url}${uihelper.build_link(sel_ik)}/$config.file_url_id$f.id"><img src="$thm"/></a>
