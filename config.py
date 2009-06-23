@@ -33,12 +33,12 @@ extensions_thumbnails = {'AVI':'.thm', 'WMV':'.thm'}
 extensions_tags = { 'AVI':('video',), 'WMV':('video',)}
 video_objects = ('AVI', 'WMV')
 #directory in which the thumbnails are going to be created and found
-tn_base_dir = "C:/work/ic/static/img/thumbs" 
+tn_base_dir = "C:/work/ic/static/thumbs" 
 html_base_dir = "/html" 
 #base_url of the pictures
 web_alias = "/static/img" 
 #base_url of the thumbnails
-tn_web_alias = "/static/img/thumbs" 
+tn_web_alias = "/static/thumbs" 
 #name of the anchor tag given to the thumbnail of the currently selected image
 tn_anchor_name = "curr_img"
 #list of index we wish to show, the order matters
